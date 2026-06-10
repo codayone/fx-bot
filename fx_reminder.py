@@ -40,21 +40,39 @@ def send_email(rate, change, yesterday_rate, overnight_rate, yesterday_overnight
 
     # ✅ Email body (text version for simplicity)
     body = f"""
-DAILY MARKET REPORT
+<html>
+<body>
 
-1) SGD/MYR
-Today: {rate:.4f}
-Yesterday: {yesterday_rate:.4f}
-Change: {direction} {round(change*100,4)}%
+<p><b>DAILY MARKET REPORT</b></p>
+
+<p><b>1) SGD/MYR</b></p>
+
+<p>
+Today: <b>{rate:.4f}</b><br>
+Yesterday: {yesterday_rate:.4f}<br><br>
+
+Change: {direction} {round(change*100,4)}%<br><br>
+
 {fx_status}
+</p>
 
-2) Malaysia Overnight Rate
-Today: {overnight_rate:.2f}%
-Yesterday: {yesterday_overnight_rate:.2f}%
+<p><b>2) Malaysia Overnight Rate</b></p>
+
+<p>
+Today: <b>{overnight_rate:.2f}%</b><br>
+Yesterday: {yesterday_overnight_rate:.2f}%<br><br>
+
 {overnight_status}
+</p>
+
+<p>----------------------------------<br>
+Auto-generated report</p>
+
+</body>
+</html>
 """
 
-    msg = MIMEText(body)
+    msg = MIMEText(body, "html")
     msg["Subject"] = "Daily FX Report: SGD/MYR"
 
     # ✅ THIS IS YOUR BOT DISPLAY NAME
