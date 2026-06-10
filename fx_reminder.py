@@ -108,9 +108,21 @@ try:
     # =========================
     # 2) BNM INTEREST RATE PART
     # =========================
-    bnm_url = "https://www.bnm.gov.my/interest-rates-volumes"
 
-    tables = pd.read_html(bnm_url)
+    from io import StringIO
+    import urllib.request
+    
+    bnm_url = "https://financialmarkets.bnm.gov.my/data-download-bnm-money-market-operations"
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+    
+    req = urllib.request.Request(bnm_url, headers=headers)
+    html = urllib.request.urlopen(req).read().decode("utf-8")
+    
+    tables = pd.read_html(StringIO(html))
+
 
     target_df = None
 
