@@ -109,15 +109,8 @@ try:
     # 2) BNM INTEREST RATE PART
     # =========================
     bnm_url = "https://www.bnm.gov.my/interest-rates-volumes"
-    driver.get(bnm_url)
-    time.sleep(5)
 
-    WebDriverWait(driver, 30).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "table"))
-    )
-
-
-    tables = pd.read_html(StringIO(driver.page_source))
+    tables = pd.read_html(bnm_url)
 
     target_df = None
 
