@@ -19,9 +19,15 @@ jobs:
           python-version: '3.11'
 
       - name: Install Chrome
+        id: setup-chrome
         uses: browser-actions/setup-chrome@v2
         with:
           install-chromedriver: true
+
+      - name: Verify Chrome
+        run: |
+          chrome --version
+          chromedriver --version
 
       - name: Install packages
         run: |
@@ -31,5 +37,6 @@ jobs:
         env:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
+          CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: |
           python fx_reminder.py
