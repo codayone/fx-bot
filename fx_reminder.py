@@ -81,7 +81,8 @@ Yesterday: {yesterday_overnight_rate:.2f}%
 options = Options()
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
-# options.add_argument("--headless=new")  # enable later if you want no browser popup
+options.add_argument("--headless=new")
+options.add_argument("--disable-dev-shm-usage")
 
 driver = webdriver.Chrome(options=options)
 
