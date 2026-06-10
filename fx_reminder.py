@@ -14,7 +14,7 @@ print("Script started ✅")
 
 import smtplib
 from email.mime.text import MIMEText
-import os
+import time
 
 def send_email(rate, change, yesterday_rate, overnight_rate, yesterday_overnight_rate, overnight_changed):
 
