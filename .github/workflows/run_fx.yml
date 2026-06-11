@@ -30,9 +30,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run script
-        run: python fx_reminder.py
-
       - name: Run FX Bot
         run: |
           python fx_reminder.py
