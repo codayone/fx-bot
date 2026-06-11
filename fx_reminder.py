@@ -119,6 +119,11 @@ try:
     response = requests.get(url)
     data = response.json()
     
+    print("DEBUG API response:", data)  # 👈 ADD THIS LINE
+    
+    if "result" not in data:
+        raise Exception(f"API response does not contain 'result': {data}")
+    
     rate = data["result"]
     
     print("Current FX rate:", rate)
