@@ -108,24 +108,21 @@ options.add_argument("--disable-dev-shm-usage")
 
 driver = webdriver.Chrome(options=options)
 
-try:
+try: 
     # =========================
-    # 1) XE FX RATE (SGD/MYR)
+    # 1) FX RATE (API version — NO Selenium)
     # =========================
-    xe_url = "https://www.xe.com/en-us/currencyconverter/convert/?Amount=1&From=SGD&To=MYR"
-    driver.get(xe_url)
+    import requests
+    
+    url = "https://api.exchangerate.host/convert?from=SGD&to=MYR"
+    
+    response = requests.get(url)
+    data = response.json()
+    
+    rate = data["result"]
+    
+    print("Current FX rate:", rate)
 
-    rate_el = WebDriverWait(driver, 30).until(
-        EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, "[data-testid='converter-result']")
-        )
-    )
-
-    rate_text = rate_el.text
-    print("Current FX text:", rate_text)
-
-    rate = float(rate_text.split("=")[1].split("MYR")[0].strip())
-    print("Numeric FX rate:", rate)
 
     # =========================
     # 2) BNM INTEREST RATE PART
