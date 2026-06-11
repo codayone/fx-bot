@@ -1,9 +1,9 @@
 name: Run FX Bot Daily
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "*/5 * * * *"
-  workflow_dispatch:
 
 jobs:
   run-script:
