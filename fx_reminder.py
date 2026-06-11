@@ -110,23 +110,23 @@ driver = webdriver.Chrome(options=options)
 
 try: 
     # =========================
-    # 1) FX RATE (API version — NO Selenium)
+    # 1) XE FX RATE (SGD/MYR)
     # =========================
-    import requests
-    
-    url = "https://api.exchangerate.host/convert?from=SGD&to=MYR"
-    
-    response = requests.get(url)
-    data = response.json()
-    
-    print("DEBUG API response:", data)  # 👈 ADD THIS LINE
-    
-    if "result" not in data:
-        raise Exception(f"API response does not contain 'result': {data}")
-    
-    rate = data["result"]
-    
-    print("Current FX rate:", rate)
+    xe_url = "https://www.xe.com/en-us/currencyconverter/convert/?Amount=1&From=SGD&To=MYR"
+    driver.get(xe_url)
+
+    rate_el = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located(
+            (By.XPATH, "//*[contains(text(),' SGD = ') and contains(text(),' MYR')]")
+        )
+    )
+
+    rate_text = rate_el.text
+    print("Current FX text:", rate_text)
+
+    rate = float(rate_text.split("=")[1].split("MYR")[0].strip())
+    print("Numeric FX rate:", rate)
+
 
 
     # =========================
