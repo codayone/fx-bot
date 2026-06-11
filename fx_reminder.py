@@ -84,6 +84,10 @@ Auto-generated report</p>
     email = os.getenv("EMAIL")
     password = os.getenv("PASSWORD")
 
+    print("EMAIL:", email)
+    print("PASSWORD is None?", password is None)
+
+
     server = smtplib.SMTP("smtp.office365.com", 587)
     server.starttls()
     server.login(email, password)
