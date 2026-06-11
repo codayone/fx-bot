@@ -2,7 +2,7 @@ name: Run FX Bot Daily
 
 on:
   schedule:
-    - cron: '0 1 * * *'   # 9am Singapore
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
