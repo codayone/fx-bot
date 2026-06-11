@@ -203,7 +203,19 @@ new_data = pd.DataFrame({
 
 if os.path.exists(file_path):
     df = pd.read_excel(file_path)
+
+    # ✅ force Date format
+    df["Date"] = pd.to_datetime(df["Date"]).dt.date
+
+    # ✅ REMOVE today's previous entry
+    df = df[df["Date"] != today]
+
+    # ✅ add new data
     df = pd.concat([df, new_data], ignore_index=True)
+
+    # ✅ safety (no duplicates)
+    df = df.drop_duplicates(subset=["Date"], keep="last")
+
 else:
     df = new_data
 
