@@ -115,9 +115,9 @@ try:
     xe_url = "https://www.xe.com/en-us/currencyconverter/convert/?Amount=1&From=SGD&To=MYR"
     driver.get(xe_url)
 
-    rate_el = WebDriverWait(driver, 20).until(
+    rate_el = WebDriverWait(driver, 30).until(
         EC.visibility_of_element_located(
-            (By.XPATH, "//*[contains(text(),' SGD = ') and contains(text(),' MYR')]")
+            (By.CSS_SELECTOR, "[data-testid='converter-result']")
         )
     )
 
