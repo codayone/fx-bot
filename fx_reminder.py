@@ -115,32 +115,17 @@ try:
     xe_url = "https://www.xe.com/en-us/currencyconverter/convert/?Amount=1&From=SGD&To=MYR"
     driver.get(xe_url)
 
-    rate_el = None
-    
-    for i in range(3):
-        try:
-            rate_el = WebDriverWait(driver, 60).until(
-                EC.visibility_of_element_located((By.XPATH, "YOUR_XPATH_HERE"))
-            )
-            break
-        except Exception as e:
-            print(f"Retry {i+1} failed: {e}")
-            time.sleep(5)
-    
-    if rate_el is None:
-        print("Page title:", driver.title)
-        print("Current URL:", driver.current_url)
-        raise Exception("❌ FX rate element not found after retries")
-    
-    rate_text = rate_el.text
-    print("Current FX text:", rate_text)
+    rate_el = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located(
+            (By.XPATH, "//*[contains(text(),' SGD = ') and contains(text(),' MYR')]")
+        )
+    )
+
     rate_text = rate_el.text
     print("Current FX text:", rate_text)
 
     rate = float(rate_text.split("=")[1].split("MYR")[0].strip())
     print("Numeric FX rate:", rate)
-
-
 
     # =========================
     # 2) BNM INTEREST RATE PART
