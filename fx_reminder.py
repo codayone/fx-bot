@@ -249,7 +249,6 @@ else:
     change_pct = None  # first day case
 
 print("Change %:", change_pct)
-``
 
 
 # =========================
