@@ -189,38 +189,67 @@ finally:
     driver.quit()
 
 
-# =========================
-# SAVE TO EXCEL
-# =========================
-file_path = "market_data.xlsx"
-today = datetime.today().date()
+import pandas as pd
+import os
+from datetime import datetime, timedelta
+import pytz
 
+# =========================
+# SET TIMEZONE (VERY IMPORTANT)
+# =========================
+sgt = pytz.timezone("Asia/Singapore")
+today = datetime.now(sgt).date()
+yesterday = today - timedelta(days=1)
+
+file_path = "market_data.csv"
+
+# =========================
+# NEW DATA (your scraped values)
+# =========================
 new_data = pd.DataFrame({
     "Date": [today],
     "MYR_per_SGD": [rate],
     "Malaysia_Overnight_Rate": [overnight_rate]
 })
 
+# =========================
+# LOAD EXISTING DATA
+# =========================
 if os.path.exists(file_path):
-    df = pd.read_excel(file_path)
+    df = pd.read_csv(file_path)
 
-    # ✅ force Date format
+    # ✅ ensure proper date format
     df["Date"] = pd.to_datetime(df["Date"]).dt.date
 
-    # ✅ REMOVE today's previous entry
+    # ✅ REMOVE today's old row (if rerun)
     df = df[df["Date"] != today]
 
-    # ✅ add new data
+    # ✅ APPEND new data
     df = pd.concat([df, new_data], ignore_index=True)
-
-    # ✅ safety (no duplicates)
-    df = df.drop_duplicates(subset=["Date"], keep="last")
 
 else:
     df = new_data
 
-df.to_excel(file_path, index=False)
-print("Saved to Excel ✅")
+# =========================
+# SAVE BACK
+# =========================
+df.to_csv(file_path, index=False)
+
+print("Saved to CSV ✅")
+
+# =========================
+# GET YESTERDAY VALUE
+# =========================
+yesterday_row = df[df["Date"] == yesterday]
+
+if not yesterday_row.empty:
+    prev_rate = yesterday_row["MYR_per_SGD"].values[0]
+    change_pct = ((rate - prev_rate) / prev_rate) * 100
+else:
+    change_pct = None  # first day case
+
+print("Change %:", change_pct)
+``
 
 
 # =========================
