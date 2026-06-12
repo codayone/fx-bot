@@ -221,6 +221,58 @@ new_data = pd.DataFrame({
 # LOAD EXISTING DATA
 # =========================
 if os.path.exists(file_path):
+    df = pd.read_csv(file_path)
+    df["Timestamp"] = pd.to_datetime(df["Timestamp"])
+else:
+    df = pd.DataFrame(columns=[
+        "Timestamp", 
+        "MYR_per_SGD", 
+        "Malaysia_Overnight_Rate"
+    ])
+
+# =========================
+# CALCULATE CHANGE (vs LAST RUN)
+# =========================
+if not df.empty:
+    df = df.sort_values("Timestamp")
+
+    prev_rate = float(df.iloc[-1]["MYR_per_SGD"])
+    change_pct = ((rate - prev_rate) / prev_rate) * 100
+else:
+    prev_rate = None
+    change_pct = None
+
+# =========================
+# APPEND NEW DATA (NO DELETING)
+# =========================
+df = pd.concat([df, new_data], ignore_index=True)
+
+# =========================
+# SAVE
+# =========================
+df.to_csv(file_path, index=False)
+
+print("Saved to CSV ✅")
+print(df.tail())
+
+# =========================
+# FORMAT OUTPUT
+# =========================
+if change_pct is None:
+    change_text = "N/A"
+else:
+    if change_pct > 0:
+        arrow = "▲"
+    elif change_pct < 0:
+        arrow = "▼"
+    else:
+        arrow = "➜"
+
+    change_text = f"{arrow} {change_pct:.4f}%"
+
+print("Previous Rate:", prev_rate)
+print("Current Rate:", rate)
+print("Change:", change_text)
 
 # =========================
 # CALCULATE FX CHANGE + RATE CHANGE
