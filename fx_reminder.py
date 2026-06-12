@@ -115,11 +115,15 @@ try:
     xe_url = "https://www.xe.com/en-us/currencyconverter/convert/?Amount=1&From=SGD&To=MYR"
     driver.get(xe_url)
 
-    rate_el = WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located(
-            (By.XPATH, "//*[contains(text(),' SGD = ') and contains(text(),' MYR')]")
-        )
-    )
+    for i in range(3):
+        try:
+            rate_el = WebDriverWait(driver, 60).until(
+                EC.visibility_of_element_located(("YOUR_LOCATOR"))
+            )
+            break
+        except:
+            print(f"Retry {i+1}")
+            time.sleep(5)
 
     rate_text = rate_el.text
     print("Current FX text:", rate_text)
