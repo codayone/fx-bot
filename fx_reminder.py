@@ -115,15 +115,21 @@ try:
     xe_url = "https://www.xe.com/en-us/currencyconverter/convert/?Amount=1&From=SGD&To=MYR"
     driver.get(xe_url)
 
+    rate_el = None  # ✅ initialize
+    
     for i in range(3):
         try:
             rate_el = WebDriverWait(driver, 60).until(
-                EC.visibility_of_element_located(("YOUR_LOCATOR"))
+                EC.visibility_of_element_located(("YOUR_LOCATOR_HERE"))
             )
             break
-        except:
-            print(f"Retry {i+1}")
+        except Exception as e:
+            print(f"Retry {i+1} failed:", e)
+            import time
             time.sleep(5)
+    
+    if rate_el is None:
+        raise Exception("❌ FX rate element not found after retries")
 
     rate_text = rate_el.text
     print("Current FX text:", rate_text)
