@@ -188,23 +188,28 @@ try:
 finally:
     driver.quit()
 
-
 import pandas as pd
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
 
 # =========================
-# SET TIMEZONE (VERY IMPORTANT)
+# SET TIMEZONE (IMPORTANT)
 # =========================
 sgt = pytz.timezone("Asia/Singapore")
 today = datetime.now(sgt).date()
-yesterday = today - timedelta(days=1)
 
 file_path = "market_data.csv"
 
 # =========================
-# NEW DATA (your scraped values)
+# YOUR EXISTING VALUES (from scraper)
+# =========================
+# assume you already have:
+# rate
+# overnight_rate
+
+# =========================
+# NEW ROW
 # =========================
 new_data = pd.DataFrame({
     "Date": [today],
@@ -218,38 +223,54 @@ new_data = pd.DataFrame({
 if os.path.exists(file_path):
     df = pd.read_csv(file_path)
 
-    # ✅ ensure proper date format
+    # ensure date format
     df["Date"] = pd.to_datetime(df["Date"]).dt.date
 
-    # ✅ REMOVE today's old row (if rerun)
+    # remove today's old entry (important for reruns)
     df = df[df["Date"] != today]
 
-    # ✅ APPEND new data
+    # append new data
     df = pd.concat([df, new_data], ignore_index=True)
 
 else:
     df = new_data
 
 # =========================
-# SAVE BACK
+# SORT DATA
+# =========================
+df = df.sort_values("Date")
+
+# =========================
+# CALCULATE CHANGE (FIXED LOGIC)
+# =========================
+previous_rows = df[df["Date"] < today]
+
+if not previous_rows.empty:
+    prev_rate = previous_rows.iloc[-1]["MYR_per_SGD"]
+    change_pct = ((rate - prev_rate) / prev_rate) * 100
+else:
+    prev_rate = None
+    change_pct = None
+
+# =========================
+# SAVE FILE
 # =========================
 df.to_csv(file_path, index=False)
 
 print("Saved to CSV ✅")
 
 # =========================
-# GET YESTERDAY VALUE
+# FORMAT OUTPUT (for email)
 # =========================
-yesterday_row = df[df["Date"] == yesterday]
-
-if not yesterday_row.empty:
-    prev_rate = yesterday_row["MYR_per_SGD"].values[0]
-    change_pct = ((rate - prev_rate) / prev_rate) * 100
+if change_pct is None:
+    change_text = "N/A"
 else:
-    change_pct = None  # first day case
+    arrow = "▲" if change_pct > 0 else "▼"
+    change_text = f"{arrow} {change_pct:.4f}%"
 
-print("Change %:", change_pct)
-
+print("Previous Rate:", prev_rate)
+print("Current Rate:", rate)
+print("Change:", change_text)
 
 # =========================
 # CALCULATE FX CHANGE + RATE CHANGE
