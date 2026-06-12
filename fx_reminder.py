@@ -194,25 +194,25 @@ from datetime import datetime
 import pytz
 
 # =========================
-# SET TIMEZONE (IMPORTANT)
+# TIMEZONE
 # =========================
 sgt = pytz.timezone("Asia/Singapore")
-today = datetime.now(sgt).date()
+now = datetime.now(sgt)
 
 file_path = "market_data.csv"
 
 # =========================
-# YOUR EXISTING VALUES (from scraper)
+# YOUR SCRAPED DATA
 # =========================
 # assume you already have:
 # rate
 # overnight_rate
 
 # =========================
-# NEW ROW
+# NEW ENTRY (with timestamp)
 # =========================
 new_data = pd.DataFrame({
-    "Date": [today],
+    "Timestamp": [now.strftime("%Y-%m-%d %H:%M:%S")],
     "MYR_per_SGD": [rate],
     "Malaysia_Overnight_Rate": [overnight_rate]
 })
@@ -221,56 +221,6 @@ new_data = pd.DataFrame({
 # LOAD EXISTING DATA
 # =========================
 if os.path.exists(file_path):
-    df = pd.read_csv(file_path)
-
-    # ensure date format
-    df["Date"] = pd.to_datetime(df["Date"]).dt.date
-
-    # remove today's old entry (important for reruns)
-    df = df[df["Date"] != today]
-
-    # append new data
-    df = pd.concat([df, new_data], ignore_index=True)
-
-else:
-    df = new_data
-
-# =========================
-# SORT DATA
-# =========================
-df = df.sort_values("Date")
-
-# =========================
-# CALCULATE CHANGE (FIXED LOGIC)
-# =========================
-previous_rows = df[df["Date"] < today]
-
-if not previous_rows.empty:
-    prev_rate = previous_rows.iloc[-1]["MYR_per_SGD"]
-    change_pct = ((rate - prev_rate) / prev_rate) * 100
-else:
-    prev_rate = None
-    change_pct = None
-
-# =========================
-# SAVE FILE
-# =========================
-df.to_csv(file_path, index=False)
-
-print("Saved to CSV ✅")
-
-# =========================
-# FORMAT OUTPUT (for email)
-# =========================
-if change_pct is None:
-    change_text = "N/A"
-else:
-    arrow = "▲" if change_pct > 0 else "▼"
-    change_text = f"{arrow} {change_pct:.4f}%"
-
-print("Previous Rate:", prev_rate)
-print("Current Rate:", rate)
-print("Change:", change_text)
 
 # =========================
 # CALCULATE FX CHANGE + RATE CHANGE
